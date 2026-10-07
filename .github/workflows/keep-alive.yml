@@ -1,0 +1,29 @@
+name: Keep Streamlit Awake
+
+on:
+  schedule:
+    # Esegue l'azione ogni 10 ore
+    - cron: '0 */10 * * *'
+  workflow_dispatch: # Avvio manuale da GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  keep-awake:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Sveglia l'app Streamlit con una richiesta HTTP
+      run: |
+        curl -s -o /dev/null -w "HTTP Status: %{http_code}\n" \
+          "https://222c9lhbimqfq6gqcx8q5t.streamlit.app" || true
+
+    - name: Fai un commit vuoto per resettare il timer di Streamlit
+      run: |
+        git config --global user.name "Binomiale Bot"
+        git config --global user.email "bot@binomiale.it"
+        git commit --allow-empty -m "Keep-alive: risveglio pianificato dell'app meteo"
+        git push origin main
