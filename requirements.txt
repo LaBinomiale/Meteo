@@ -4,3 +4,4 @@ pandas
 folium
 streamlit-folium
 geopy
+pyarrow<25
