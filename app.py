@@ -286,7 +286,7 @@ if lat is not None and lon is not None:
                                 vista["Data"] = vista["Data"].dt.strftime("%d-%m-%Y")
                                 st.dataframe(
                                     vista[["Data", "Pioggia (mm)", "Raffica Vento (km/h)", "Tipo"]],
-                                    use_container_width=True,
+                                    width="stretch",
                                 )
                             else:
                                 st.info("Nessun evento sopra soglia.")
@@ -295,7 +295,7 @@ if lat is not None and lon is not None:
                         st.subheader("📅 Dati completi (storico)")
                         vista_full = df.copy()
                         vista_full["Data"] = vista_full["Data"].dt.strftime("%d-%m-%Y")
-                        st.dataframe(vista_full, use_container_width=True)
+                        st.dataframe(vista_full, width="stretch")
 
                         # Download CSV storico
                         csv_st = df.copy()
@@ -355,7 +355,7 @@ if lat is not None and lon is not None:
                     st.subheader("📋 Tabella previsioni (7 giorni)")
                     vista_fc = df_fc.copy()
                     vista_fc["Data"] = vista_fc["Data"].dt.strftime("%d-%m-%Y (%A)")
-                    st.dataframe(vista_fc, use_container_width=True)
+                    st.dataframe(vista_full, width="stretch")
 
                     # Mappa + eventi
                     col1, col2 = st.columns(2)
@@ -376,7 +376,7 @@ if lat is not None and lon is not None:
                             vista_ev["Data"] = vista_ev["Data"].dt.strftime("%d-%m-%Y")
                             st.dataframe(
                                 vista_ev[["Data", "Pioggia (mm)", "Raffica Vento (km/h)", "Tipo"]],
-                                use_container_width=True,
+                                width="stretch",
                             )
                         else:
                             st.info("Nessun giorno sopra soglia.")
