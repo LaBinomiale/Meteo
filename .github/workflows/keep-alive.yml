@@ -18,58 +18,21 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install streamlit-wakeup
         run: |
-          pip install selenium webdriver-manager
+          pip install streamlit-wakeup
 
       - name: Run Awake Script
         env:
           URLS: ${{ secrets.URLS }}
         run: |
-          python - << 'EOF'
-          import os
-          import time
-          from selenium import webdriver
-          from selenium.webdriver.chrome.service import Service
-          from selenium.webdriver.common.by import By
-          from webdriver_manager.chrome import ChromeDriverManager
-
-          urls = [url.strip() for url in os.getenv("URLS", "").split(",") if url.strip()]
-          
-          if not urls:
-              print("Nessun URL configurato nei Secrets!")
-              exit(1)
-
-          # Configura il browser invisibile (Headless Chrome)
-          options = webdriver.ChromeOptions()
-          options.add_argument("--headless")
-          options.add_argument("--no-sandbox")
-          options.add_argument("--disable-dev-shm-usage")
-          
-          driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
-          for url in urls:
-              print(f"Visitando l'app: {url}")
-              driver.get(url)
-              time.sleep(10) # Attende il caricamento iniziale
-              
-              try:
-                  # Cerca il pulsante di risveglio di Streamlit usando il testo o i tag noti
-                  buttons = driver.find_elements(By.TAG_NAME, "button")
-                  wake_up_button = None
-                  for b in buttons:
-                      if "wake" in b.text.lower() or "back up" in b.text.lower():
-                          wake_up_button = b
-                          break
-                  
-                  if wake_up_button:
-                      wake_up_button.click()
-                      print(f"Pulsante 'Wake up' cliccato con successo per {url}!")
-                      time.sleep(15) # Attende che l'app si avvii
-                  else:
-                      print(f"L'app {url} era già attiva o il pulsante non è stato trovato.")
-              except Exception as e:
-                  print(f"Errore durante il controllo di {url}: {e}")
-
-          driver.quit()
-          EOF
+          # Divide gli URL separati da virgola e li esegue uno per uno
+          for url in $(echo $URLS | tr "," "\n"); do
+            # Rimuove eventuali spazi bianchi vuoti
+            clean_url=$(echo "$url" | xargs)
+            if [ -n "$clean_url" ]; then
+              echo "Visitando e svegliando: $clean_url"
+              # Esegue il comando per svegliare l'app
+              streamlit-wakeup "$clean_url" || echo "App già attiva o errore di connessione."
+            fi
+          done
